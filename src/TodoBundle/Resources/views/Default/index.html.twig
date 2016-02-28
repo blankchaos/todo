@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{%  block body %}
+    <h2 class="title" xmlns="http://www.w3.org/1999/html">To-Do List</h2>
+    <div class="form">
+        <form id="task_form" method="POST">
+            <p><input name="dueDate" id="dueDate" type="date"/></p>
+            <p><input name="title" id="title" placeholder="Title" /></p>
+            <p>
+                <select id="priority" name="priority">
+                    <option value="0">Low Priority</option>
+                    <option value="1">Normal Priority</option>
+                    <option value="2">High Priority</option>
+                    <option value="3">Very High Priority</option>
+                </select>
+            </p>
+            <p><textarea name="content" placeholder="Content of Task" id="content" rows="4"></textarea></p>
+            <p><input name="assigned" id="assigned" placeholder="Assigned to"/></p>
+            <p><input name="submit" class="button" id="submit" tabindex="5" value="Create Task" /></p>
+        </form>
+    </div>
+    <div class="completed_block">
+        <div class="toggle_completed">Show completed tasks</div><br>
+        {#generate completed hidden list#}
+        {% for entry in todo %}
+            {% if entry.isCompleted == 1 %}
+                <div class="task_completed_block">
+                    {#check priority and set realted classes#}
+                    {% if entry.priority == 3 %}<span class="very_important">{{ 'Very High Priority' }}</span>{% endif %}
+                    {% if entry.priority == 2 %}<span class="important">{{ 'High Priority' }}</span>{% endif %}
+                    {% if entry.priority == 1 %}<span class="normal">{{ 'Normal Priority' }}</span>{% endif %}
+                    {% if entry.priority == 0 %}<span class="not_important">{{ 'Low Priority' }}</span>{% endif %}
+                    {#list fields with results#}
+                    <span class="task_assigned_to"><input class="disabled" value="{{ entry.assigned }}" disabled></span>
+                    <span class="due_date"><input class="disabled" value="{{ entry.dueDate|date("Y-m-d")}}" disabled></span>
+                    <span class="task_title"><textarea class="disabled" disabled>{{ entry.title }}</textarea></span>
+                    <span class="task_content"><textarea name="edit_content" class="disabled" rows="4" disabled>{{ entry.content }}</textarea></span>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    <div class="tasks">
+        <div class="current_tasks">Current not completed tasks</div><br>
+        {#generate ongoing list#}
+        {% for entry in todo %}
+            {% if entry.isCompleted == 0 %}
+                <div class="task_block" name="{{ entry.id }}" data-id="{{ entry.id }}">
+                    {% if entry.priority == 3 %}<span class="very_important">{{ 'Very High Priority' }}</span>{% endif %}
+                    {% if entry.priority == 2 %}<span class="important">{{ 'High Priority' }}</span>{% endif %}
+                    {% if entry.priority == 1 %}<span class="normal">{{ 'Normal Priority' }}</span>{% endif %}
+                    {% if entry.priority == 0 %}<span class="not_important">{{ 'Low Priority' }}</span>{% endif %}
+                    <span class="task_assigned_to"><input data-id="{{ entry.id }}" class="disabled edit_assigned" value="{{ entry.assigned }}" disabled></span>
+                    <span class="due_date"><input data-id="{{ entry.id }}" type="date" class="disabled edit_date" value="{{ entry.dueDate|date("Y-m-d")}}" disabled></span>
+                    <span class="task_title"><textarea data-id="{{ entry.id }}" class="disabled edit_title" disabled>{{ entry.title }}</textarea></span>
+                    <span class="task_content"><textarea data-id="{{ entry.id }}" class="disabled edit_content" rows="4" disabled>{{ entry.content }}</textarea></span>
+                    <span class="complete_label"><label data-id="{{ entry.id }}" class="hidden"><input id="{{ entry.id }}" type="checkbox" class="isCompleted" name="isCompleted"/>Mark as Completed</label></span><br>
+                    {#add buttons for manipulation with tasks#}
+                    <span class="edit_task_button"><input type="button" data-id="{{ entry.id }}" class="edit_task button" value="Edit task"/></span>
+                    <span class="save_task_button"><input type="button" data-id="{{ entry.id }}" class="save save_hidden button" value="Save"/></span>
+                    <span class="cancel_task_button"><input type="button" data-id="{{ entry.id }}" class="cancel back button" value="Cancel"/></span>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+{% endblock %}
